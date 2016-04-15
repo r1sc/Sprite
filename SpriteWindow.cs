@@ -127,6 +127,11 @@ namespace Sprite
             Gl.glMatrixMode((uint) Gl.MatrixMode.GL_MODELVIEW);
             Gl.glLoadIdentity();
             Gl.glEnable((uint) Gl.GetTarget.GL_TEXTURE_2D);
+            
+            Gl.glBlendFunc((uint)Gl.BlendingFactorDest.GL_SRC_ALPHA, (uint)Gl.BlendingFactorDest.GL_ONE_MINUS_SRC_ALPHA);
+            Gl.glEnable((uint)Gl.GetTarget.GL_BLEND);
+            Gl.glEnable((uint)Gl.GetTarget.GL_ALPHA_TEST);
+            Gl.glAlphaFunc((uint)Gl.AlphaFunctions.GL_GREATER, 0);
 
             _quadList = Gl.glGenLists(1);
             Gl.glNewList(_quadList, (uint) Gl.ListMode.GL_COMPILE);

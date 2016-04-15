@@ -56,11 +56,6 @@ namespace Sprite.Sample
         {
             glBitmap = SpriteBitmap.FromImage(Properties.Resources.test, 4, 4);
             wndBitmap = SpriteBitmap.FromImage((Bitmap)Image.FromFile("wnd.png"), 4, 4);
-
-            Gl.glBlendFunc((uint)Gl.BlendingFactorDest.GL_SRC_ALPHA, (uint)Gl.BlendingFactorDest.GL_ONE_MINUS_SRC_ALPHA);
-            Gl.glEnable((uint)Gl.GetTarget.GL_BLEND);
-            Gl.glEnable((uint)Gl.GetTarget.GL_ALPHA_TEST);
-            Gl.glAlphaFunc((uint)Gl.AlphaFunctions.GL_GREATER, 0);
         }
     }
 }
