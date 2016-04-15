@@ -51,6 +51,7 @@
     <Compile Include="Gl.cs" />
     <Compile Include="SpriteBitmap.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="VirtualKeys.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

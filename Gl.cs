@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Sprite
 {
-    class Gl
+    public class Gl
     {
         #region The OpenGL constant definitions.
         [Flags()]

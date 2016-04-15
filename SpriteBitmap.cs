@@ -20,9 +20,6 @@ namespace Sprite
             Rows = rows;
             FrameSize = new SizeF(Cols == 0 ? 1 : 1.0f / Cols, Rows == 0 ? 1 : 1.0f / Rows);
             FramePixelSize = new Size(Cols == 0 ? Size.Width : Size.Width / Cols, Rows == 0 ? Size.Height : Size.Height / Rows);
-            uint[] textureNames = new uint[1];
-            Gl.glGenTextures(1, textureNames);
-            GLTexture = textureNames[0];
         }
 
         public static SpriteBitmap FromImage(Bitmap bitmap, int cols = 0, int rows = 0)
@@ -30,6 +27,10 @@ namespace Sprite
             var glBitmap = new SpriteBitmap(bitmap.Size, cols, rows);
             var bmpData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly,
                 PixelFormat.Format32bppArgb);
+            
+            uint[] textureNames = new uint[1];
+            Gl.glGenTextures(1, textureNames);
+            glBitmap.GLTexture = textureNames[0];
 
             const int GL_UNSIGNED_INT_8_8_8_8_REV = 0x8367;
             const int GL_BGRA = 0x80E1;

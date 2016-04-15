@@ -55,7 +55,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\fx2\Sprite.csproj">
+    <ProjectReference Include="..\Sprite.csproj">
       <Project>{6deac6cd-7593-46f2-a246-94c55c846640}</Project>
       <Name>Sprite</Name>
     </ProjectReference>
