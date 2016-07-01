@@ -180,6 +180,7 @@ namespace Sprite
             KeyDown += WindowsFormsKeyEvent;
             Activated += ActivateWindow;
             Deactivate += DeactivateWindow;
+            Icon = Properties.Resources.gamecontroller;
             IsPaused = false;
         }
         private void WindowsFormsKeyEvent(object sender, KeyEventArgs e)

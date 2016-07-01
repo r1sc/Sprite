@@ -9,7 +9,7 @@ namespace Sprite.Sample
 
         static void Main(string[] args)
         {
-            var gfx = new SpriteWindow("Test", new Size(640, 480));
+            var gfx = new SpriteWindow("Test", new Size(320, 200));
             gfx.OnLoadResources += Gfx_OnLoadResources;
 
             var i = 0;
