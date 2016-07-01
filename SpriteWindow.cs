@@ -83,15 +83,13 @@ namespace Sprite
         public InputForm Form { get; }
         public event EventHandler OnLoadResources;
         private Size VirtualSize { get; set; }
-        private string _originalWindowTitle;
         public bool IsPaused => Form.IsPaused;
         public SpriteWindow(string windowTitle) : this(windowTitle, new Size(320, 200)) { }
         public SpriteWindow(string windowTitle, Size virtualSize)
         {
             Running = true;
-            _originalWindowTitle = windowTitle;
             VirtualSize = new Size(virtualSize.Width, virtualSize.Height);
-            Form = new InputForm { Text = _originalWindowTitle, ClientSize = new Size(640, 400) };
+            Form = new InputForm { Text = windowTitle, ClientSize = new Size(640, 400), OriginalWindowTitle = windowTitle };
             Form.Shown += Form_Shown;
             Form.Resize += _form_Resize;
             Form.Closed += _form_Closed;
@@ -175,6 +173,7 @@ namespace Sprite
         const int WM_KEYUP = 0x101;
         public Hashtable Keys = new Hashtable();
         private bool IsFullscreen { get; set; }
+        internal string OriginalWindowTitle { get; set; }
         public bool IsPaused { get; private set; }
         public InputForm()
         {
@@ -188,11 +187,38 @@ namespace Sprite
             if ((e.Alt && e.KeyCode == System.Windows.Forms.Keys.Enter) || e.KeyCode == System.Windows.Forms.Keys.F11)
                 ToggleFullscreen();
         }
-        private void ActivateWindow(object sender, EventArgs e) => IsPaused = false;
-        private void DeactivateWindow(object sender, EventArgs e) => IsPaused = true;
+        private void ActivateWindow(object sender, EventArgs e)
+        {
+            IsPaused = false;
+            Text = OriginalWindowTitle;
+        }
+        private void DeactivateWindow(object sender, EventArgs e)
+        {
+            IsPaused = true;
+            Text = $"PAUSED: {OriginalWindowTitle}";
+        }
         private void ToggleFullscreen()
         {
-            
+            IsFullscreen = !IsFullscreen;
+            if (IsFullscreen)
+            {
+                TopMost = true;
+                FormBorderStyle = FormBorderStyle.None;
+                var screen = Screen.FromPoint(new Point(Left + (Width / 2), Top + (Height / 2)));
+                if (screen == null)
+                    screen = Screen.FromPoint(new Point(Left, Top));
+                Top = screen.Bounds.Top;
+                Left = screen.Bounds.Left;
+                Width = screen.Bounds.Width;
+                Height = screen.Bounds.Height;
+            }
+            else
+            {
+                TopMost = false;
+                FormBorderStyle = FormBorderStyle.Sizable;
+                Width = 640;
+                Height = 400;
+            }
         }
         protected override void WndProc(ref Message m)
         {
