@@ -38,7 +38,6 @@ namespace Sprite
             public Int32 dwVisibleMask;
             public Int32 dwDamageMask;
         }
-
         [StructLayout(LayoutKind.Sequential)]
         public struct NativeMessage
         {
@@ -49,8 +48,6 @@ namespace Sprite
             public UInt64 time;
             public Point p;
         }
-
-
         private const int PFD_SUPPORT_OPENGL = 0x00000020;
         private const int PFD_DOUBLEBUFFER = 0x00000001;
         public const int GL_FRAGMENT_SHADER = 0x8B30;
@@ -59,7 +56,6 @@ namespace Sprite
         public const uint WM_QUIT = 0x0012;
         public const uint WM_CLOSE = 0x0010;
         public const uint WM_DESTROY = 0x002;
-
         [DllImport("gdi32.dll")]
         private static extern int ChoosePixelFormat(IntPtr hdc, [In] ref PIXELFORMATDESCRIPTOR ppfd);
         [DllImport("gdi32.dll")]
@@ -85,31 +81,26 @@ namespace Sprite
         private TimeSpan _start;
         private uint _quadList;
         public InputForm Form { get; }
-
         public event EventHandler OnLoadResources;
-
-        public SpriteWindow(string windowTitle)
+        private Size VirtualSize { get; set; }
+        public bool IsPaused => Form.IsPaused;
+        public SpriteWindow(string windowTitle) : this(windowTitle, new Size(320, 200)) { }
+        public SpriteWindow(string windowTitle, Size virtualSize)
         {
             Running = true;
-
-            Form = new InputForm
-            {
-                Text = windowTitle,
-                ClientSize = new Size(640, 400)
-            };
+            VirtualSize = new Size(virtualSize.Width, virtualSize.Height);
+            Form = new InputForm { Text = windowTitle, ClientSize = new Size(640, 400), OriginalWindowTitle = windowTitle };
             Form.Shown += Form_Shown;
             Form.Resize += _form_Resize;
             Form.Closed += _form_Closed;
             Form.Show();
-
             _start = DateTime.Now.TimeOfDay;
         }
-        
         private void Form_Shown(object sender, EventArgs e)
         {
             MakeContext();
+            Form.Activate();
         }
-
         private void MakeContext()
         {
             var g = Graphics.FromHwnd(Form.Handle);
@@ -123,16 +114,14 @@ namespace Sprite
             Gl.glViewport(0, 0, Form.ClientSize.Width, Form.ClientSize.Height);
             Gl.glMatrixMode((uint) Gl.MatrixMode.GL_PROJECTION);
             Gl.glLoadIdentity();
-            Gl.glOrtho(0, 320, 200, 0, 0, 1);
+            Gl.glOrtho(0, VirtualSize.Width, VirtualSize.Height, 0, 0, 1);
             Gl.glMatrixMode((uint) Gl.MatrixMode.GL_MODELVIEW);
             Gl.glLoadIdentity();
             Gl.glEnable((uint) Gl.GetTarget.GL_TEXTURE_2D);
-            
             Gl.glBlendFunc((uint)Gl.BlendingFactorDest.GL_SRC_ALPHA, (uint)Gl.BlendingFactorDest.GL_ONE_MINUS_SRC_ALPHA);
             Gl.glEnable((uint)Gl.GetTarget.GL_BLEND);
             Gl.glEnable((uint)Gl.GetTarget.GL_ALPHA_TEST);
             Gl.glAlphaFunc((uint)Gl.AlphaFunctions.GL_GREATER, 0);
-
             _quadList = Gl.glGenLists(1);
             Gl.glNewList(_quadList, (uint) Gl.ListMode.GL_COMPILE);
             Gl.glBegin(7);
@@ -146,26 +135,15 @@ namespace Sprite
             Gl.glVertex2f(0, 1);
             Gl.glEnd();
             Gl.glEndList();
-
             if (OnLoadResources != null)
                 OnLoadResources(this, null);
         }
-
         private void _form_Closed(object sender, EventArgs e)
         {
             Running = false;
         }
-
-        private void _form_Resize(object sender, EventArgs e)
-        {
-            Gl.glViewport(0, 0, Form.ClientSize.Width, Form.ClientSize.Height);
-        }
-
-        public bool IsKeyDown(VirtualKeys key)
-        {
-            return Form.Keys[(byte)key] != null && (bool)Form.Keys[(byte)key];
-        }
-
+        private void _form_Resize(object sender, EventArgs e) => Gl.glViewport(0, 0, Form.ClientSize.Width, Form.ClientSize.Height);
+        public bool IsKeyDown(VirtualKeys key) => Form.Keys[(byte)key] != null && (bool)Form.Keys[(byte)key];
         public void DrawGlBitmap(SpriteBitmap bitmap, int x, int y, int frame = 0)
         {
             if (_glContext == IntPtr.Zero)
@@ -182,25 +160,68 @@ namespace Sprite
             Gl.glScalef(bitmap.FrameSize.Width, bitmap.FrameSize.Height, 1);
             Gl.glCallList(_quadList);
         }
-
-
         public void Swap()
         {
             SwapBuffers(_hdc);
             Application.DoEvents();
             Gl.glClear((uint) Gl.AttribMask.GL_COLOR_BUFFER_BIT);
-            
         }
-
         public bool Running { get; set; }
     }
     public class InputForm : Form
     {
         const int WM_KEYDOWN = 0x100;
         const int WM_KEYUP = 0x101;
-
         public Hashtable Keys = new Hashtable();
-
+        private bool IsFullscreen { get; set; }
+        internal string OriginalWindowTitle { get; set; }
+        public bool IsPaused { get; private set; }
+        public InputForm()
+        {
+            KeyDown += WindowsFormsKeyEvent;
+            Activated += ActivateWindow;
+            Deactivate += DeactivateWindow;
+            Icon = Properties.Resources.gamecontroller;
+            IsPaused = false;
+        }
+        private void WindowsFormsKeyEvent(object sender, KeyEventArgs e)
+        {
+            if ((e.Alt && e.KeyCode == System.Windows.Forms.Keys.Enter) || e.KeyCode == System.Windows.Forms.Keys.F11)
+                ToggleFullscreen();
+        }
+        private void ActivateWindow(object sender, EventArgs e)
+        {
+            IsPaused = false;
+            Text = OriginalWindowTitle;
+        }
+        private void DeactivateWindow(object sender, EventArgs e)
+        {
+            IsPaused = true;
+            Text = $"PAUSED: {OriginalWindowTitle}";
+        }
+        private void ToggleFullscreen()
+        {
+            IsFullscreen = !IsFullscreen;
+            if (IsFullscreen)
+            {
+                TopMost = true;
+                FormBorderStyle = FormBorderStyle.None;
+                var screen = Screen.FromPoint(new Point(Left + (Width / 2), Top + (Height / 2)));
+                if (screen == null)
+                    screen = Screen.FromPoint(new Point(Left, Top));
+                Top = screen.Bounds.Top;
+                Left = screen.Bounds.Left;
+                Width = screen.Bounds.Width;
+                Height = screen.Bounds.Height;
+            }
+            else
+            {
+                TopMost = false;
+                FormBorderStyle = FormBorderStyle.Sizable;
+                Width = 640;
+                Height = 400;
+            }
+        }
         protected override void WndProc(ref Message m)
         {
             var key = (uint)m.WParam;

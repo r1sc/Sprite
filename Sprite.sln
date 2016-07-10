@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sprite", "Sprite.csproj", "{6DEAC6CD-7593-46F2-A246-94C55C846640}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sprite.Sample", "Sprite.Sample\Sprite.Sample.csproj", "{A50EC8D6-C257-44C9-865E-A0FE609A3642}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sprite.CollisionDetection", "Sprite.CollisionDetection\Sprite.CollisionDetection.csproj", "{18A3B1A0-202D-40CD-8238-9E6FA6DCEB52}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{A50EC8D6-C257-44C9-865E-A0FE609A3642}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A50EC8D6-C257-44C9-865E-A0FE609A3642}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A50EC8D6-C257-44C9-865E-A0FE609A3642}.Release|Any CPU.Build.0 = Release|Any CPU
+		{18A3B1A0-202D-40CD-8238-9E6FA6DCEB52}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{18A3B1A0-202D-40CD-8238-9E6FA6DCEB52}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{18A3B1A0-202D-40CD-8238-9E6FA6DCEB52}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{18A3B1A0-202D-40CD-8238-9E6FA6DCEB52}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
