@@ -5,13 +5,12 @@ namespace Sprite.Sample
     class Program
     {
         private static SpriteBitmap glBitmap;
-        private static SpriteBitmap wndBitmap;
 
         static void Main(string[] args)
         {
             var gfx = new SpriteWindow("Test", new Size(320, 200));
             gfx.OnLoadResources += Gfx_OnLoadResources;
-
+            gfx.Swap(); //Let windows forms event happen.
             var i = 0;
             float p = 0;
             var frame = 0;
@@ -34,7 +33,7 @@ namespace Sprite.Sample
                         i++;
                         frame = 2;
                     }
-                    if (gfx.IsKeyDown(VirtualKeys.Left))
+                    else if (gfx.IsKeyDown(VirtualKeys.Left))
                     {
                         i--;
                         frame = 1;
@@ -42,9 +41,9 @@ namespace Sprite.Sample
 
                 }
                 //Draw background.
-                for (int y = -1; y < 60; y++)
+                for (int y = -1; y < 30; y++)
                 {
-                    for (int x = 0; x < 80; x++)
+                    for (int x = 0; x < 40; x++)
                     {
                         gfx.DrawGlBitmap(glBitmap, x * 8, y * 8 + yOffset, 5);
                     }
@@ -58,10 +57,7 @@ namespace Sprite.Sample
             }
         }
 
-        private static void Gfx_OnLoadResources(object sender, System.EventArgs e)
-        {
+        private static void Gfx_OnLoadResources(object sender, System.EventArgs e) =>
             glBitmap = SpriteBitmap.FromImage(Properties.Resources.test, 4, 4);
-            wndBitmap = SpriteBitmap.FromImage((Bitmap)Image.FromFile("wnd.png"), 4, 4);
-        }
     }
 }

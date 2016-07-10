@@ -99,6 +99,7 @@ namespace Sprite
         private void Form_Shown(object sender, EventArgs e)
         {
             MakeContext();
+            Form.Activate();
         }
         private void MakeContext()
         {
